@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package proto;
+
+service VA {
+	rpc IsSafeDomain(Domain) returns (Valid) {}
+	rpc PerformValidation(PerformValidationRequest) returns (ValidationRecords) {}
+}
+
+message Domain {
+	string name = 1;
+}
+
+message Valid {
+	bool valid = 1;
+}
+
+message PerformValidationRequest {
+	string domain = 1;
+	VAChallenge challenge = 2;
+	AuthzMeta authz = 3;
+}
+
+// VAChallenge contains just the fields of core.Challenge that the VA needs
+message VAChallenge {
+	int64 id = 1;
+	string type = 2;
+	string token = 3;
+	string accountKey = 4; // jose.JsonWebKey.MarshalJSON()
+	KeyAuthorization keyAuthorization = 5;
+}
+
+message KeyAuthorization {
+	string token = 1;
+	string thumbprint = 2;
+}
+
+message AuthzMeta {
+	int64 id = 1;
+	int64 regID = 2;
+}
+
+message ValidationRecords {
+	repeated ValidationRecord records = 1;
+}
+
+message ValidationRecord {
+	string hostname = 1;
+	string port = 2;
+	repeated string addressesResolved = 3;
+	string addressUsed = 4;
+
+	repeated string authorities = 5;
+	string url = 6;
+}

@@ -28,7 +28,7 @@ BUILD_TIME_VAR = github.com/letsencrypt/boulder/core.BuildTime
 
 GO_BUILD_FLAGS = -ldflags "-X \"$(BUILD_ID_VAR)=$(BUILD_ID)\" -X \"$(BUILD_TIME_VAR)=$(BUILD_TIME)\" -X \"$(BUILD_HOST_VAR)=$(BUILD_HOST)\"" -tags std_json
 
-.PHONY: all build
+.PHONY: all build grpc
 all: build
 
 build: $(OBJECTS)
@@ -58,6 +58,10 @@ install:
 archive:
 	git archive --output=$(ARCHIVEDIR)/boulder-$(COMMIT_ID).tar.gz \
 		--prefix=boulder-$(COMMIT_ID)/ $(COMMIT_ID)
+
+# Rebuild all grpc files
+grpc:
+	protoc --go_out=. rpc/proto/*.proto
 
 # Building an RPM requires `fpm` from https://github.com/jordansissel/fpm
 # which you can install with `gem install fpm`.
