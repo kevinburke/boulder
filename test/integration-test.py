@@ -204,7 +204,7 @@ def run_node_test(domain, chall_type, expected_ct_submissions):
     last_reminder = expiry + datetime.timedelta(days=-2)
     try:
         urllib2.urlopen("http://localhost:9381/clear", data='')
-        if subprocess.Popen(
+        if subprocess.Popen('cd ../..; ' +
                 ('FAKECLOCK=`date -d "%s"` ../../bin/expiration-mailer --config ../../test/boulder-config.json ; ' * 3) %
                 (no_reminder.isoformat(), first_reminder.isoformat(), last_reminder.isoformat()),
                 shell=True).wait() != 0:
