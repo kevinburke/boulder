@@ -205,7 +205,7 @@ def run_node_test(domain, chall_type, expected_ct_submissions):
     try:
         urllib2.urlopen("http://localhost:9381/clear", data='')
         if subprocess.Popen(
-                ('FAKECLOCK=`date -d "%s"` ../../bin/expiration-mailer --config ../../test/boulder-config.json ; ' * 3) %
+                (('FAKECLOCK=`date -d "%s"` ./bin/expiration-mailer --config test/boulder-config.json && ' * 3) + 'true') %
                 (no_reminder.isoformat(), first_reminder.isoformat(), last_reminder.isoformat()),
                 cwd='../..', shell=True).wait() != 0:
             print("\nExpiry mailer failed")
@@ -215,9 +215,10 @@ def run_node_test(domain, chall_type, expected_ct_submissions):
         if mailcount != 2:
             print("\nExpiry mailer failed: expected 2 emails, got %d" % mailcount)
             return MAILER_FAILED
-    except e:
+    except Exception as e:
         print("\nExpiry mailer failed:")
         print(e)
+        return MAILER_FAILED
 
     if subprocess.Popen('''
         node revoke.js %s %s http://localhost:4000/acme/revoke-cert
